@@ -6,12 +6,25 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  useRouterState,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+
+type MetaPixelFunction = {
+  (...args: unknown[]): void;
+  callMethod?: ((...args: unknown[]) => void) | undefined;
+  queue: unknown[][];
+  push: (...args: unknown[]) => void;
+  loaded: boolean;
+  version: string;
+};
+
+const META_PIXEL_ID = "1626300591947988";
+let metaPixelInitialized = false;
 
 function NotFoundComponent() {
   return (
@@ -107,6 +120,15 @@ function RootShell({ children }: { children: ReactNode }) {
       </head>
       <body>
         {children}
+        <noscript>
+          <img
+            height="1"
+            width="1"
+            style={{ display: "none" }}
+            src={`https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1`}
+            alt=""
+          />
+        </noscript>
         <Scripts />
       </body>
     </html>
@@ -118,8 +140,65 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <MetaPixel />
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
     </QueryClientProvider>
   );
+}
+
+function MetaPixel() {
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+
+  useEffect(() => {
+    const pixelWindow = window as Window & {
+      fbq?: MetaPixelFunction;
+      _fbq?: MetaPixelFunction;
+    };
+
+    if (!pixelWindow.fbq) {
+      const queue: unknown[][] = [];
+      const fbq: MetaPixelFunction = Object.assign(
+        (...args: unknown[]) => {
+          if (fbq.callMethod) {
+            fbq.callMethod(...args);
+          } else {
+            queue.push(args);
+          }
+        },
+        {
+          callMethod: undefined as ((...args: unknown[]) => void) | undefined,
+          queue,
+          push: (...args: unknown[]) => queue.push(args),
+          loaded: true,
+          version: "2.0",
+        },
+      );
+      pixelWindow.fbq = fbq;
+      pixelWindow._fbq = fbq;
+
+      const script = document.createElement("script");
+      script.async = true;
+      script.src = "https://connect.facebook.net/en_US/fbevents.js";
+      const firstScript = document.getElementsByTagName("script")[0];
+      if (firstScript?.parentNode) {
+        firstScript.parentNode.insertBefore(script, firstScript);
+      } else {
+        document.head.append(script);
+      }
+    }
+
+    const fbq = pixelWindow.fbq;
+    if (!fbq) {
+      throw new Error("Meta Pixel failed to initialize.");
+    }
+
+    if (!metaPixelInitialized) {
+      fbq("init", META_PIXEL_ID);
+      metaPixelInitialized = true;
+    }
+    fbq("track", "PageView");
+  }, [pathname]);
+
+  return null;
 }
