@@ -280,10 +280,12 @@ function WaButton({
   children,
   variant = "primary",
   className = "",
+  whatsappService,
 }: {
   children: ReactNode;
   variant?: "primary" | "outline" | "light";
   className?: string;
+  whatsappService?: string;
 }) {
   const styles = {
     primary: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-soft",
@@ -292,7 +294,7 @@ function WaButton({
   }[variant];
   return (
     <a
-      href={whatsappLink()}
+      href={whatsappLink(whatsappService)}
       target="_blank"
       rel="noopener noreferrer"
       className={`inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-medium tracking-wide transition-all duration-300 ${styles} ${className}`}
@@ -577,6 +579,7 @@ function Needs() {
 
 type Exp = {
   name: string;
+  whatsappService: string;
   sub?: string;
   text: string;
   items?: string[];
@@ -633,7 +636,11 @@ function ExpCard({ e }: { e: Exp }) {
           ) : (
             <span />
           )}
-          <WaButton variant={e.hoverImage ? "light" : "outline"} className="!px-5 !py-2.5">
+          <WaButton
+            variant={e.hoverImage ? "light" : "outline"}
+            className="!px-5 !py-2.5"
+            whatsappService={e.whatsappService}
+          >
             {e.cta ?? "Quero agendar"}
           </WaButton>
         </div>
@@ -645,6 +652,7 @@ function ExpCard({ e }: { e: Exp }) {
 const massagens: Exp[] = [
   {
     name: "Massagem Terapêutica",
+    whatsappService: "a Massagem Terapêutica",
     sub: "Healing Massage",
     text: "Uma experiência voltada ao cuidado de desconfortos musculares, tensões e contraturas. A sessão combina diferentes técnicas de acordo com a necessidade percebida durante o atendimento.",
     items: [
@@ -660,6 +668,7 @@ const massagens: Exp[] = [
   },
   {
     name: "Massagem Relaxante",
+    whatsappService: "a Massagem Relaxante",
     sub: "Sopro de Alma",
     text: "Uma pausa para quem sente que está vivendo no automático e precisa respirar. Movimentos suaves e contínuos, aromaterapia e óleos essenciais tornam a experiência ainda mais acolhedora.",
     ideal:
@@ -671,17 +680,20 @@ const massagens: Exp[] = [
 const pausas: Exp[] = [
   {
     name: "Escalda-Pés",
+    whatsappService: "o Escalda-Pés",
     text: "Um momento de pausa para deixar o peso do dia ir embora e receber cuidado dos pés às pernas. Inclui escalda-pés e massagem nas pernas e nos pés.",
     dur: "40 minutos",
     hoverImage: escaldaPesImage,
   },
   {
     name: "Terapia Capilar",
+    whatsappService: "a Terapia Capilar",
     text: "Um cuidado individual voltado ao couro cabeludo, combinado com uma massagem craniana para proporcionar relaxamento e bem-estar.",
     hoverImage: capilarImage,
   },
   {
     name: "Revitalização Facial",
+    whatsappService: "a Revitalização Facial",
     text: "Um momento dedicado ao cuidado facial, pensado para proporcionar uma sensação de renovação, frescor e bem-estar.",
     dur: "50 min a 1 hora",
     hoverImage: facialImage,
@@ -742,7 +754,11 @@ function Experiences() {
                   <p className="mt-3 text-xs uppercase tracking-[0.15em] text-accent">
                     Cerca de 1 hora
                   </p>
-                  <WaButton variant="light" className="mt-5 !px-5 !py-2.5">
+                  <WaButton
+                    variant="light"
+                    className="mt-5 !px-5 !py-2.5"
+                    whatsappService="o Head Spa Simples"
+                  >
                     Agendar experiência
                   </WaButton>
                 </div>
@@ -764,7 +780,9 @@ function Experiences() {
                   <p className="mt-3 text-xs uppercase tracking-[0.15em] opacity-70">
                     Da cabeça aos pés · cerca de 1h30
                   </p>
-                  <WaButton className="mt-5 !px-5 !py-2.5">Quero viver essa experiência</WaButton>
+                  <WaButton className="mt-5 !px-5 !py-2.5" whatsappService="o Head Spa Completo">
+                    Quero viver essa experiência
+                  </WaButton>
                 </div>
               </div>
             </div>
