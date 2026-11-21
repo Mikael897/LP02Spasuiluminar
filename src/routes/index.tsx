@@ -595,7 +595,10 @@ function ExpCard({ e }: { e: Exp }) {
     : "";
 
   return (
-    <article className="scroll-card group relative isolate flex flex-col overflow-hidden rounded-3xl border border-border bg-card p-8">
+    <article
+      data-servico={e.name}
+      className="scroll-card group relative isolate flex flex-col overflow-hidden rounded-3xl border border-border bg-card p-8"
+    >
       {e.hoverImage && (
         <>
           <div
@@ -745,7 +748,7 @@ function Experiences() {
                 </p>
               </div>
               <div className="mt-8 grid gap-5 lg:grid-cols-2">
-                <div className="head-spa-content rounded-3xl border border-primary-foreground/20 p-6">
+                <div data-servico="Head Spa Simples" className="head-spa-content rounded-3xl border border-primary-foreground/20 p-6">
                   <h4 className="font-display text-2xl">Head Spa Simples</h4>
                   <p className="mt-2 text-sm opacity-80">
                     Terapia capilar e massagem na cabeça, pescoço e ombros. Ideal para quem sente a
@@ -762,7 +765,7 @@ function Experiences() {
                     Agendar experiência
                   </WaButton>
                 </div>
-                <div className="head-spa-content relative rounded-3xl bg-accent p-6 text-accent-foreground">
+                <div data-servico="Head Spa Completo" className="head-spa-content relative rounded-3xl bg-accent p-6 text-accent-foreground">
                   <span className="absolute -top-3 right-5 rounded-full bg-background px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-primary">
                     Premium
                   </span>

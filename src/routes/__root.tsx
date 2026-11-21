@@ -26,6 +26,16 @@ type MetaPixelFunction = {
 const META_PIXEL_ID = "1626300591947988";
 let metaPixelInitialized = false;
 
+function loadSpasuTracking() {
+  if (document.querySelector('script[data-spasu-tracking="true"]')) return;
+
+  const script = document.createElement("script");
+  script.src = "/spasu-tracking.js";
+  script.defer = true;
+  script.dataset.spasuTracking = "true";
+  document.head.append(script);
+}
+
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -198,6 +208,7 @@ function MetaPixel() {
       metaPixelInitialized = true;
     }
     fbq("track", "PageView");
+    loadSpasuTracking();
   }, [pathname]);
 
   return null;
