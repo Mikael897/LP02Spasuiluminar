@@ -7,3 +7,11 @@ export function whatsappLink(service?: string) {
 
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 }
+
+export function registrationWhatsAppLink(name: string, phone: string, email: string) {
+  const message =
+    `Olá! Gostaria de me registrar no SpaSu Iluminar.\n\n` +
+    `Nome: ${name}\nTelefone: ${phone}\nE-mail: ${email}`;
+
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+}

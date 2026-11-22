@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { WHATSAPP_NUMBER, whatsappLink } from "./whatsapp";
+import { WHATSAPP_NUMBER, registrationWhatsAppLink, whatsappLink } from "./whatsapp";
 
 describe("WhatsApp links", () => {
   it("uses the configured number and the site contact message", () => {
@@ -13,6 +13,12 @@ describe("WhatsApp links", () => {
   it("creates a personalized message for a selected service", () => {
     expect(whatsappLink("a Massagem Terapêutica")).toBe(
       "https://wa.me/5551994102121?text=Ol%C3%A1!%20Quero%20saber%20mais%20sobre%20a%20Massagem%20Terap%C3%AAutica.",
+    );
+  });
+
+  it("creates a registration message with the submitted details", () => {
+    expect(registrationWhatsAppLink("Maria Silva", "(51) 99999-9999", "maria@example.com")).toContain(
+      "Nome%3A%20Maria%20Silva",
     );
   });
 });

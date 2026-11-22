@@ -4,6 +4,7 @@ import {
   useEffect,
   useState,
   type FocusEvent,
+  type FormEvent,
   type ReactNode,
   type RefObject,
 } from "react";
@@ -47,6 +48,7 @@ import googleReviewImage02 from "@/images/avaliacaoGoogle/avaliacao02.png?url";
 import googleReviewImage03 from "@/images/avaliacaoGoogle/avaliacao03.png?url";
 import googleReviewImage04 from "@/images/avaliacaoGoogle/avaliacao04.png?url";
 import googleReviewImage05 from "@/images/avaliacaoGoogle/avaliacao05.png?url";
+import { supabase } from "@/lib/supabase";
 import { whatsappLink } from "@/lib/whatsapp";
 
 export const Route = createFileRoute("/")({
@@ -1011,6 +1013,118 @@ function Steps() {
   );
 }
 
+function Registration() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (isSubmitting) return;
+
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
+    const name = String(form.get("name") ?? "").trim();
+    const phone = String(form.get("phone") ?? "").trim();
+    const email = String(form.get("email") ?? "").trim();
+
+    setMessage(null);
+    if (!name || !phone || !email) {
+      setMessage({ type: "error", text: "Preencha nome, telefone e e-mail." });
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setMessage({ type: "error", text: "Informe um e-mail válido." });
+      return;
+    }
+
+    setIsSubmitting(true);
+    const { error } = await supabase.from("leads").insert([
+      {
+        nome: name,
+        telefone: phone,
+        email,
+        aceita_marketing: false,
+      },
+    ]);
+    setIsSubmitting(false);
+
+    if (error) {
+      setMessage({ type: "error", text: "Não foi possível enviar seu cadastro. Tente novamente." });
+      return;
+    }
+
+    formElement.reset();
+    setMessage({ type: "success", text: "Cadastro realizado com sucesso!" });
+  }
+
+  return (
+    <section id="registro" className="px-5 py-20 md:py-28">
+      <div className="reveal mx-auto max-w-5xl overflow-hidden rounded-[2.5rem] bg-primary px-6 py-12 text-primary-foreground md:px-16 md:py-16">
+        <div className="grid items-center gap-10 md:grid-cols-[0.8fr_1.2fr]">
+          <div>
+            <p className="text-xs uppercase tracking-[0.3em] text-accent">Cadastro</p>
+            <h2 className="mt-4 font-display text-4xl leading-tight md:text-5xl">
+              Registre-se conosco
+            </h2>
+            <p className="mt-5 max-w-md text-sm leading-relaxed text-primary-foreground/75">
+              Deixe seus dados para iniciar seu momento de cuidado com o SpaSu Iluminar.
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="grid gap-4">
+            <label className="grid gap-2 text-sm">
+              Nome:
+              <input
+                name="name"
+                type="text"
+                required
+                autoComplete="name"
+                className="h-12 rounded-xl border border-primary-foreground/20 bg-background px-4 text-foreground outline-none focus:border-gold"
+              />
+            </label>
+            <label className="grid gap-2 text-sm">
+              Telefone:
+              <input
+                name="phone"
+                type="tel"
+                required
+                autoComplete="tel"
+                className="h-12 rounded-xl border border-primary-foreground/20 bg-background px-4 text-foreground outline-none focus:border-gold"
+              />
+            </label>
+            <label className="grid gap-2 text-sm">
+              E-mail:
+              <input
+                name="email"
+                type="email"
+                required
+                autoComplete="email"
+                className="h-12 rounded-xl border border-primary-foreground/20 bg-background px-4 text-foreground outline-none focus:border-gold"
+              />
+            </label>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="mt-2 h-12 rounded-full bg-accent px-7 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isSubmitting ? "Enviando..." : "Enviar"}
+            </button>
+            {message && (
+              <p
+                role={message.type === "error" ? "alert" : "status"}
+                className={`text-sm ${message.type === "success" ? "text-accent" : "text-primary-foreground"}`}
+              >
+                {message.text}
+              </p>
+            )}
+          </form>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function FinalCta() {
   return (
     <section className="px-5 py-20 md:py-28">
@@ -1110,6 +1224,7 @@ function Index() {
       <About />
       <Testimonials />
       <Steps />
+      <Registration />
       <FinalCta />
       <Footer />
       <a
