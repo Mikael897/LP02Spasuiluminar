@@ -1224,8 +1224,8 @@ function Index() {
       <About />
       <Testimonials />
       <Steps />
-      <Registration />
       <FinalCta />
+      <Registration />
       <Footer />
       <a
         href={whatsappLink()}
